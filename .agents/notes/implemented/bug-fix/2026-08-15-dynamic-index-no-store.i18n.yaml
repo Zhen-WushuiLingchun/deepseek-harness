@@ -1,0 +1,6 @@
+# Bilingual-pair consistency record (docs/i18n/README.md): the git blob hash of each
+# side as of the last confirmed-consistent state. Both languages carry equal authority;
+# after editing either side, bring the other along and re-record with:
+#   pnpm run verify-translation-pairing --write .agents/notes/implemented/bug-fix/2026-08-15-dynamic-index-no-store.md
+2026-08-15-dynamic-index-no-store.md: 7302d5f57f9902fb8fea0480cd1adb2239a46a3b
+2026-08-15-dynamic-index-no-store.zh.md: 22c0b77d2bcbfc598c073eb06fa5ef11ea77a49a
