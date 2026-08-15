@@ -5,8 +5,7 @@
  * miss falls back to index.html with HTTP 200 (SPA routing), unknown
  * extensions ship as octet-stream, non-GET/HEAD is 405. Every index response
  * runs through the webserver's registered index taps (boot-manifest
- * injection) and carries `Cache-Control: no-store`; static asset cache behavior
- * remains unchanged. The dist location is workspace knowledge of the composing
+ * injection). The dist location is workspace knowledge of the composing
  * application, so `distIndex` is typically supplied through a `!!js`
  * expression, never hardcoded by a deployment.
  * @module @deepseek-ai/dsh-host-frontend-static
@@ -69,10 +68,7 @@ export async function serveStatic(
   }
   const serveIndex = async (): Promise<void> => {
     const body = await renderIndex()
-    res.writeHead(200, {
-      'content-type': MIME['.html'],
-      'cache-control': 'no-store',
-    })
+    res.writeHead(200, { 'content-type': MIME['.html'] })
     res.end(body)
   }
   if (target === distRoot || target === distIndex) {
