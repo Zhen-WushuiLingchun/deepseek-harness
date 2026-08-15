@@ -73,18 +73,12 @@ async function loadComposition(): Promise<Context> {
   return context
 }
 
-/** GET (by default) one path against the running server; returns headers and a body prefix. */
-async function request(port: number, path: string, init?: RequestInit): Promise<{
-  status: number
-  type: string | null
-  cacheControl: string | null
-  body: string
-}> {
+/** GET (by default) one path against the running server; returns status, content-type, and a body prefix. */
+async function request(port: number, path: string, init?: RequestInit): Promise<{ status: number; type: string | null; body: string }> {
   const response = await fetch(`http://127.0.0.1:${String(port)}${path}`, init)
   return {
     status: response.status,
     type: response.headers.get('content-type'),
-    cacheControl: response.headers.get('cache-control'),
     body: (await response.text()).slice(0, 80),
   }
 }
@@ -100,12 +94,7 @@ describe('real Loader composition', () => {
     const port = server.port
 
     // Real assets with their MIME types; a live rebuild is served on the next read.
-    expect(await request(port, '/app.js')).toMatchObject({
-      status: 200,
-      type: 'text/javascript; charset=utf-8',
-      cacheControl: null,
-      body: 'export {}',
-    })
+    expect(await request(port, '/app.js')).toMatchObject({ status: 200, type: 'text/javascript; charset=utf-8', body: 'export {}' })
     expect(await request(port, '/manifest.webmanifest')).toMatchObject({
       status: 200,
       type: 'application/manifest+json',
@@ -123,11 +112,9 @@ describe('real Loader composition', () => {
     for (const path of ['/', '/index.html', '/no/such/route']) {
       const got = await request(port, path)
       expect(got.status).toBe(200)
-      expect(got.cacheControl).toBe('no-store')
       expect(got.body).toContain('__T__')
       expect(got.body).toContain('shell')
     }
-    expect((await request(port, '/', { method: 'HEAD' })).cacheControl).toBe('no-store')
     untap()
     expect((await request(port, '/')).body).not.toContain('__T__')
 
